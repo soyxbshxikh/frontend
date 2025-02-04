@@ -4,14 +4,17 @@ import Wrapper from "@/components/Wrapper";
 import React from "react";
 import RelatedProducts from "@/components/RelatedProducts";
 
-const ProductDetail = () => {
+const ProductDetail = ({ product, products }) => {
+  const p = product?.data?.[0]?.attributes;
+  console.log('Product slug page', p);
+  
   return (
     <div className="w-full md:py-20">
       <Wrapper>
         <div className="flex flex-col lg:flex-row md:px-10 gap-[50px] lg:gap-[100px]">
           {/* Left column start */}
           <div className="w-full md:w-auto flex-[1.5] max-w-[500px] lg:max-w-full mx-auto lg:max-0">
-            <ProductDetailsCarousel />
+            <ProductDetailsCarousel  />
           </div>
           {/* Left column end */}
           {/* Right column start */}
@@ -125,10 +128,13 @@ const ProductDetail = () => {
           </div>
           {/* Right column end */}
         </div>
-        <RelatedProducts/>
+        <RelatedProducts products={products} />
       </Wrapper>
     </div>
   );
 };
 
 export default ProductDetail;
+
+
+
