@@ -3,6 +3,7 @@ import { IoMdHeartEmpty } from "react-icons/io";
 import Wrapper from "@/components/Wrapper";
 import React from "react";
 import RelatedProducts from "@/components/RelatedProducts";
+import { fetchDataFromApi } from "@/utils/api";
 
 const ProductDetail = ({ product, products }) => {
   const p = product?.data?.[0]?.attributes;
@@ -14,7 +15,11 @@ const ProductDetail = ({ product, products }) => {
         <div className="flex flex-col lg:flex-row md:px-10 gap-[50px] lg:gap-[100px]">
           {/* Left column start */}
           <div className="w-full md:w-auto flex-[1.5] max-w-[500px] lg:max-w-full mx-auto lg:max-0">
-            <ProductDetailsCarousel  />
+            {p && p.image ? (
+              <ProductDetailsCarousel images={p.image.data} />
+            ) : (
+              <div>No images available</div>
+            )}
           </div>
           {/* Left column end */}
           {/* Right column start */}
@@ -136,5 +141,28 @@ const ProductDetail = ({ product, products }) => {
 
 export default ProductDetail;
 
+export async function getStaticPaths() {
+    const products = await fetchDataFromApi("/api/products?populate=*");
+    const paths = products.data.map((products) => ({
+        params: { slug: products.slug },
+    }));
+    return { paths, fallback: false };
+}
 
 
+// `getStaticPaths` requires using `getStaticProps`
+export async function getStaticProps({ params: { slug } }) {
+    const product = await fetchDataFromApi(
+        `/api/products?populate=*&filters[slug][$eq]=${slug}`
+    );
+    const products = await fetchDataFromApi(
+        `/api/products?populate=*&filters[slug][$ne]=${slug}`
+    );
+
+    return {
+        props: {
+            product,
+            products,
+        },
+    };
+}
